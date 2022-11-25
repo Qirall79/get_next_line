@@ -11,73 +11,80 @@
 /* ************************************************************************** */
 #include "get_next_line_bonus.h"
 
-int	includes_nl(char *str)
+char	*ft_free(char *holder)
 {
-	int	i;
+	free(holder);
+	holder = NULL;
+	return (NULL);
+}
+
+char	*read_content(int fd, char *holder)
+{
+	char	buff[BUFFER_SIZE + 1];
+	char	*tmp;
+	int		ret;
+
+	ret = 1;
+	while (ret > 0)
+	{
+		ret = read(fd, &buff, BUFFER_SIZE);
+		if (ret == -1)
+			return (ft_free(holder));
+		buff[ret] = 0;
+		tmp = ft_strjoin(holder, buff);
+		ft_free(holder);
+		holder = tmp;
+		if (ft_strchr(holder, '\n'))
+			break ;
+	}
+	if (ret == 0 && !holder[0])
+		return (ft_free(holder));
+	return (holder);
+}
+
+char	*extract_line(char *holder, int *pos)
+{
+	char	*line;
+	int		i;
 
 	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (i);
+	if (!holder[0])
+		return (NULL);
+	while (holder[i] && holder[i] != '\n')
 		i++;
-	}
-	return (-1);
+	line = ft_substr(holder, 0, i);
+	*pos = i + 1;
+	return (line);
 }
 
-char	*get_remainder(char **holder, int start)
+char	*get_remainder(char *holder, int pos)
 {
-	int		len;
 	char	*remainder;
 
-	len = ft_strlen(*holder);
-	if (len == 0)
+	if (!holder[pos])
 	{
-		free(*holder);
-		*holder = NULL;
+		ft_free(holder);
 		return (NULL);
 	}
-	remainder = ft_substr(*holder, start, len);
-	free(*holder);
-	*holder = NULL;
+	remainder = ft_substr(holder, pos, ft_strlen(holder) - 1);
+	ft_free(holder);
 	return (remainder);
-}
-
-char	*handle_line(char **holder)
-{
-	int		line_size;
-	char	*line;
-
-	line_size = includes_nl(*holder) + 1;
-	line = ft_substr(*holder, 0, line_size);
-	*holder = get_remainder(holder, line_size);
-	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char		*holder[10000];
-	char			buff[BUFFER_SIZE + 1];
-	int				ret;
+	static char	*holder[10000];
+	char		*line;
+	int			pos;
 
-	ret = read(fd, buff, BUFFER_SIZE);
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return (NULL);
 	if (!holder[fd])
 		holder[fd] = ft_strdup("");
-	while (ret >= 0)
-	{
-		buff[ret] = 0;
-		holder[fd] = ft_strjoin(holder[fd], buff);
-		if (includes_nl(holder[fd]) != -1)
-			return (handle_line(&holder[fd]));
-		if (ret == 0)
-		{
-			if (!holder[fd][0])
-				break ;
-			return (ft_strjoin(get_remainder(&holder[fd], 0), "\n"));
-		}
-		ret = read(fd, buff, BUFFER_SIZE);
-	}
-	free(holder[fd]);
-	holder[fd] = NULL;
-	return (NULL);
+	holder[fd] = read_content(fd, holder[fd]);
+	if (!holder[fd])
+		return (NULL);
+	line = extract_line(holder[fd], &pos);
+	holder[fd] = get_remainder(holder[fd], pos);
+	return (line);
 }

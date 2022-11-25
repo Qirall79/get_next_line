@@ -11,14 +11,32 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-int	ft_strlen(const char *str)
+int	ft_strlen(const char *s)
 {
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (s[i])
 		i++;
 	return (i);
+}
+
+char	*ft_substr(char *s1, int start, int end)
+{
+	int		len;
+	int		i;
+	char	*res;
+
+	len = end - start + 1;
+	res = malloc((len + 1) * sizeof(char));
+	i = 0;
+	while (i < len)
+	{
+		res[i] = s1[start + i];
+		i++;
+	}
+	res[i] = 0;
+	return (res);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -43,22 +61,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (result);
 }
 
-char	*ft_substr(char *str, int start, int end)
-{
-	int		i;
-	char	*result;
-
-	i = start;
-	result = malloc((end - start + 1) * sizeof(char));
-	while (i < end)
-	{
-		result[i - start] = str[i];
-		i++;
-	}
-	result[end - start] = 0;
-	return (result);
-}
-
 char	*ft_strdup(const char *src)
 {
 	int		i;
@@ -74,4 +76,20 @@ char	*ft_strdup(const char *src)
 	while (i--)
 		dup[i] = src[i];
 	return (dup);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	int		i;
+	char	*str;
+
+	i = 0;
+	str = (char *)s;
+	while (str[i] != (unsigned char)c)
+	{
+		if (str[i] == '\0')
+			return (0);
+		i++;
+	}
+	return (str + i);
 }

@@ -10,18 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_BONUS_H
-
 # define GET_NEXT_LINE_BONUS_H
 
+# include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <fcntl.h>
 
+char	*extract_line(char *holder, int *pos);
+char	*ft_free(char *holder);
+char	*get_remainder(char *holder, int pos);
 char	*get_next_line(int fd);
-int		includes_nl(char *str);
-char	*handle_line(char **holder);
-int		ft_strlen(const char *str);
+char	*read_content(int fd, char *holder);
+int		ft_strlen(const char *s);
+char	*ft_substr(char *s1, int start, int end);
 char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_substr(char *str, int start, int end);
 char	*ft_strdup(const char *src);
-char	*get_remainder(char **holder, int start);
+char	*ft_strchr(const char *s, int c);
 #endif
